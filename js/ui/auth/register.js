@@ -1,4 +1,4 @@
-import { register } from "../../api/auth/register.js";
+import api from "../../api/instance.js"
 
 export async function onRegister(event) {
   event.preventDefault();
@@ -7,7 +7,7 @@ export async function onRegister(event) {
   const data = Object.fromEntries(formData.entries());
 
   try {
-    await register(data);
+    await api.auth.register(data)
   } catch (error) {
     alert(error);
   }

@@ -1,4 +1,4 @@
-import { login } from "../../api/auth/login.js";
+import api from "../../api/instance.js"
 
 export async function onLogin(event) {
   event.preventDefault();
@@ -7,7 +7,7 @@ export async function onLogin(event) {
   const data = Object.fromEntries(formData.entries());
 
   try {
-    await login(data);
+    await api.auth.login(data)
   } catch (error) {
     alert(error);
   }

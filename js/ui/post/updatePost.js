@@ -1,12 +1,11 @@
-import { readPost } from "../../api/post/read.js";
-import { updatePost } from "../../api/post/update.js";
+import api from "../../api/instance.js"
 import { currentPostId } from "../../utilities/currentPostId.js";
 
 export async function onUpdatePost(event) {
   const id = currentPostId();
 
   try {
-    const post = await readPost(id);
+    const post = await api.post.read(id);
 
     document.querySelector("#title").value = post.title;
     document.querySelector("#body").value = post.body;
@@ -24,7 +23,7 @@ export async function onUpdatePost(event) {
         .filter(Boolean);
 
       try {
-        await updatePost(id, data);
+        await api.post.update(id, data);
         window.location.href = `/post/?id=${id}`;
       } catch (error) {
         alert(error);

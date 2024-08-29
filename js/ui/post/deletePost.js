@@ -1,10 +1,10 @@
-import { deletePost } from "../../api/post/delete.js";
+import api from "../../api/instance.js"
 import { currentPostId } from "../../utilities/currentPostId.js";
 
 export async function onDeletePost() {
   const id = currentPostId();
   try {
-    await deletePost(id);
+    await api.post.delete(id);
     alert(`Post ${id} has been deleted`);
     window.location.href = "/";
   } catch (e) {

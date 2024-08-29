@@ -1,4 +1,4 @@
-import { createPost } from "../../api/post/create.js";
+import api from "../../api/instance.js"
 import { suggestTags } from "../../utilities/suggestTags.js";
 
 export async function onCreatePost(event) {
@@ -11,7 +11,7 @@ export async function onCreatePost(event) {
   data.tags = [...data.tags, ...suggestTags(data.title)].filter(Boolean);
 
   try {
-    const post = await createPost(data);
+    const post = await api.post.create(data)
     window.location.href = `/post/?id=${post.id}`;
   } catch (error) {
     alert(error);
