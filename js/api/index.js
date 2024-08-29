@@ -28,9 +28,7 @@ export default class NoroffAPI {
       const body = JSON.stringify({ email, password });
   
       const response = await fetch(this.apiLoginPath, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: setupHeaders(true),
         method: "post",
         body,
       });
@@ -49,9 +47,7 @@ export default class NoroffAPI {
       const body = JSON.stringify({ name, email, password });
     
       const response = await fetch(this.apiRegisterPath, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: setupHeaders(true),
         method: "post",
         body,
       });
@@ -70,14 +66,26 @@ export default class NoroffAPI {
     }
   }
 
+  util = {
+    setupHeaders: (body) => {
+      const headers = new Headers()
+
+      if (localStorage.token) {
+        headers.append("Authorization", `Bearer ${localStorage.token}`)
+      }
+
+      if (body) {
+        headers.append("Content-Type", "application/json")
+      }
+
+      return headers
+    }
+  }
+
   post = {
-    read: async (id) => {
-      const user = currentUser();
-    
+    read: async (id) => {    
       const response = await fetch(`${this.apiPostPath}/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.token}`,
-        },
+        headers: this.setupHeaders(),
       });
     
       if (response.ok) {
@@ -91,10 +99,7 @@ export default class NoroffAPI {
       const user = currentUser();
     
       const response = await fetch(`${this.apiPostPath}/${id}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.token}`,
-        },
+        headers: this.setupHeaders(true),
         method: "put",
         body: JSON.stringify({ title, body, tags, media }),
       });
@@ -111,9 +116,7 @@ export default class NoroffAPI {
     
       const response = await fetch(`${this.apiPostPath}/${id}`, {
         method: "delete",
-        headers: {
-          Authorization: `Bearer ${localStorage.token}`,
-        },
+        headers: this.setupHeaders(),
       });
     
       if (response.ok) {
@@ -122,14 +125,9 @@ export default class NoroffAPI {
     
       throw new Error("Could not delete post" + id);
     },
-    create: async ({ title, body, tags, media }) => {
-      const user = currentUser();
-    
+    create: async ({ title, body, tags, media }) => {    
       const response = await fetch(this.apiPostPath, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.token}`,
-        },
+        headers: this.setupHeaders(true),
         method: "post",
         body: JSON.stringify({ title, body, tags, media }),
       });
@@ -155,9 +153,7 @@ export default class NoroffAPI {
       url.searchParams.append("page", page);
     
       const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.token}`,
-        },
+        headers: this.setupHeaders(),
       });
     
       if (response.ok) {
