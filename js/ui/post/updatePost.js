@@ -18,7 +18,7 @@ export async function onUpdatePost(event) {
       const formData = new FormData(form)
       const data = Object.fromEntries(formData.entries())
     
-      data.tags = data.tags.split(",").map(tag => tag.trim())
+      data.tags = data.tags.split(",").map(tag => tag.trim()).filter(Boolean)
 
       try {
         await updatePost(id, data)
