@@ -1,4 +1,5 @@
 import { createPost } from "../../api/post/create.js";
+import { suggestTags } from "../../utilities/suggestTags.js";
 
 export async function onCreatePost(event) {
   event.preventDefault();
@@ -7,6 +8,7 @@ export async function onCreatePost(event) {
   const data = Object.fromEntries(formData.entries())
 
   data.tags = data.tags.split(",").map(tag => tag.trim())
+  data.tags = [...data.tags, ...suggestTags(data.title)].filter(Boolean)
 
   try {
     const post = await createPost(data)
