@@ -13,4 +13,10 @@ This repo contains a VERY bare-bones PE1 implementation, allowing for blog posts
 
 1. Look through existing code and make a short manual user demo
 2. Pick out some opportunities for improvement with classes
+   1. NoroffAPI class
+   2. NoroffUI class
+   3. NoroffRouter class
+   4. NoroffApp class
 3. Refactor and improve the code to show this approach
+   1. Header method
+   2. Form data method
