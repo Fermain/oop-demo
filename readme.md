@@ -8,6 +8,8 @@ This repo contains a VERY bare-bones PE1 implementation, allowing for blog posts
 
 - Subtly help with the upcoming CA brief by showing some relevant techniques without spoiling the surprise
 - Show some real world regex examples to help with the current module
+  - Router regex matching?
+  - Suggesting tags based on the title?
 
 ## Process
 
