@@ -7,8 +7,7 @@ export async function onDeletePost() {
     await api.post.delete(id);
     alert(`Post ${id} has been deleted`);
     window.location.href = "/";
-  } catch (e) {
-    console.log(e);
-    alert(`Post ${id} could not be deleted`);
+  } catch (error) {
+    alert(error);
   }
 }

@@ -26,38 +26,30 @@ export default class NoroffAPI {
   auth = {
     login: async ({ email, password }) => {
       const body = JSON.stringify({ email, password });
-  
+
       const response = await fetch(this.apiLoginPath, {
-        headers: setupHeaders(true),
+        headers: this.util.setupHeaders(true),
         method: "post",
         body,
       });
-    
-      if (response.ok) {
-        const { data } = await response.json();
-        const { accessToken: token, ...user } = data;
-        localStorage.token = token;
-        localStorage.user = JSON.stringify(user);
-        return data;
-      }
-    
-      throw new Error("Could not login with this account");
+
+      const { data } = await this.util.handleResponse(response)
+      const { accessToken: token, ...user } = data;
+      localStorage.token = token;
+      localStorage.user = JSON.stringify(user);
+      return user
     },
     register: async ({ name, email, password }) => {
       const body = JSON.stringify({ name, email, password });
-    
+
       const response = await fetch(this.apiRegisterPath, {
-        headers: setupHeaders(true),
+        headers: this.util.setupHeaders(true),
         method: "post",
         body,
       });
-    
-      if (response.ok) {
-        const { data } = await response.json();
-        return data;
-      }
-    
-      throw new Error("Could not register this account");
+
+      const { data } = await this.util.handleResponse(response)
+      return data
     },
     logout: () => {
       localStorage.removeItem("token")
@@ -79,89 +71,76 @@ export default class NoroffAPI {
       }
 
       return headers
+    },
+    handleResponse: async (response, output = "json") => {
+      if (response.ok) {
+        return await response[output]()
+      } else {
+        const result = await response.json()
+        const error = result.errors.map(error => error.message).join("\r\n")
+
+        throw new Error(error)
+      }
     }
   }
 
   post = {
-    read: async (id) => {    
+    read: async (id) => {
       const response = await fetch(`${this.apiPostPath}/${id}`, {
-        headers: this.setupHeaders(),
+        headers: this.util.setupHeaders(),
       });
-    
-      if (response.ok) {
-        const { data } = await response.json();
-        return data;
-      }
-    
-      throw new Error("Could not fetch post" + id);
+
+      const { data } = await this.util.handleResponse(response)
+      return data
     },
     update: async (id, { title, body, tags, media }) => {
-      const user = currentUser();
-    
       const response = await fetch(`${this.apiPostPath}/${id}`, {
-        headers: this.setupHeaders(true),
+        headers: this.util.setupHeaders(true),
         method: "put",
         body: JSON.stringify({ title, body, tags, media }),
       });
-    
-      if (response.ok) {
-        const { data } = await response.json();
-        return data;
-      }
-    
-      throw new Error("Could not update post " + id);
+
+      const { data } = await this.util.handleResponse(response)
+      return data
     },
     delete: async (id) => {
-      const user = currentUser();
-    
       const response = await fetch(`${this.apiPostPath}/${id}`, {
         method: "delete",
-        headers: this.setupHeaders(),
+        headers: this.util.setupHeaders(),
       });
-    
-      if (response.ok) {
-        return await response.text();
-      }
-    
-      throw new Error("Could not delete post" + id);
+
+      const text = this.util.handleResponse(response, "text")
+      return text
     },
-    create: async ({ title, body, tags, media }) => {    
+    create: async ({ title, body, tags, media }) => {
       const response = await fetch(this.apiPostPath, {
-        headers: this.setupHeaders(true),
+        headers: this.util.setupHeaders(true),
         method: "post",
         body: JSON.stringify({ title, body, tags, media }),
       });
-    
-      if (response.ok) {
-        const { data } = await response.json();
-        return data;
-      }
-    
-      throw new Error("Could not create post");
+
+      const { data } = await this.util.handleResponse(response)
+      return data
     }
   }
 
   posts = {
-    read: async (tag, limit = 12, page = 1) => {    
+    read: async (tag, limit = 12, page = 1) => {
       const url = new URL(this.apiPostPath);
-    
+
       if (tag) {
         url.searchParams.append("_tag", tag);
       }
-    
+
       url.searchParams.append("limit", limit);
       url.searchParams.append("page", page);
-    
+
       const response = await fetch(url, {
-        headers: this.setupHeaders(),
+        headers: this.util.setupHeaders(),
       });
-    
-      if (response.ok) {
-        const { data } = await response.json();
-        return data;
-      }
-    
-      throw new Error("Could not fetch posts");
+
+      const { data } = await this.util.handleResponse(response)
+      return data
     }
   }
 }

@@ -14,6 +14,6 @@ export async function onViewPost(id) {
       .addEventListener("click", onDeletePost);
   } catch (error) {
     alert(error);
-    window.location.href = "/";
+    // window.location.href = "/";
   }
 }
