@@ -1,7 +1,7 @@
 export function currentUser() {
   try {
-    return JSON.parse(localStorage.user)
+    return JSON.parse(localStorage.user);
   } catch {
-    return null
+    return null;
   }
 }

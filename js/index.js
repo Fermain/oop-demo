@@ -6,34 +6,34 @@ import { currentPostId } from "./utilities/currentPostId.js";
 import { onUpdatePost } from "./ui/post/updatePost.js";
 import { onViewPosts } from "./ui/post/viewPosts.js";
 
-const postId = currentPostId()
+const postId = currentPostId();
 
 switch (window.location.pathname) {
-  case '/':
-  case '/index.html':
+  case "/":
+  case "/index.html":
     // home page
     break;
-  case '/auth/register.html':
-    document.forms.register.addEventListener("submit", onRegister)
+  case "/auth/register.html":
+    document.forms.register.addEventListener("submit", onRegister);
     break;
-  case '/auth/login.html':
-    document.forms.login.addEventListener("submit", onLogin)
+  case "/auth/login.html":
+    document.forms.login.addEventListener("submit", onLogin);
     break;
-  case '/post/index.html':
-  case '/post/':
-  case '/post':
-    await onViewPost(postId)
+  case "/post/index.html":
+  case "/post/":
+  case "/post":
+    await onViewPost(postId);
     break;
-  case '/post/create.html':
-    document.forms.createPost.addEventListener("submit", onCreatePost)
+  case "/post/create.html":
+    document.forms.createPost.addEventListener("submit", onCreatePost);
     break;
-  case '/post/update.html':
-    onUpdatePost()
+  case "/post/update.html":
+    onUpdatePost();
     break;
-  case '/posts':
-  case '/posts/':
-  case '/posts/index.html':
-    onViewPosts()
+  case "/posts":
+  case "/posts/":
+  case "/posts/index.html":
+    onViewPosts();
     break;
   default:
   // 404 not found
