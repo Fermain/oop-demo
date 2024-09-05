@@ -24,6 +24,13 @@ export default class NoroffAPI {
   }
 
   auth = {
+    /**
+     * Logs in the user.
+     * @param {Object} user - The login parameters.
+     * @param {string} user.email - The user's email.
+     * @param {string} user.password - The user's password.
+     * @returns {Promise<Object>} The logged-in user data.
+     */
     login: async ({ email, password }) => {
       const body = JSON.stringify({ email, password });
 
