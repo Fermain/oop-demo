@@ -5,12 +5,19 @@ import { onViewPost } from "./ui/post/viewPost.js";
 import { currentPostId } from "./utilities/currentPostId.js";
 import { onUpdatePost } from "./ui/post/updatePost.js";
 import { onViewPosts } from "./ui/post/viewPosts.js";
-
 import NoroffAPI from "./api/index.js";
 
-const api = new NoroffAPI("https://v2.api.noroff.dev")
+const api = new NoroffAPI();
 
 const postId = currentPostId();
+
+
+document.querySelectorAll("[data-auth=logout]").forEach(button => {
+  button.addEventListener("click", event => {
+    api.auth.logout()
+  })
+})
+
 
 switch (window.location.pathname) {
   case "/":
