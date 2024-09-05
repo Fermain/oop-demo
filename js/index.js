@@ -1,16 +1,13 @@
-import { onCreatePost } from "./ui/post/createPost.js";
-import { onLogin } from "./ui/auth/login.js";
-import { onRegister } from "./ui/auth/register.js";
-import { onViewPost } from "./ui/post/viewPost.js";
 import { currentPostId } from "./utilities/currentPostId.js";
-import { onUpdatePost } from "./ui/post/updatePost.js";
 import { onViewPosts } from "./ui/post/viewPosts.js";
+
 import NoroffAPI from "./api/index.js";
+import NoroffApp from "./ui/index.js";
 
 const api = new NoroffAPI();
+const app = new NoroffApp();
 
 const postId = currentPostId();
-
 
 document.querySelectorAll("[data-auth=logout]").forEach(button => {
   button.addEventListener("click", event => {
@@ -18,28 +15,27 @@ document.querySelectorAll("[data-auth=logout]").forEach(button => {
   })
 })
 
-
 switch (window.location.pathname) {
   case "/":
   case "/index.html":
     // home page
     break;
   case "/auth/register.html":
-    document.forms.register.addEventListener("submit", onRegister);
+    document.forms.register.addEventListener("submit", app.events.register);
     break;
   case "/auth/login.html":
-    document.forms.login.addEventListener("submit", onLogin);
+    document.forms.login.addEventListener("submit", app.events.login);
     break;
   case "/post/index.html":
   case "/post/":
   case "/post":
-    await onViewPost(postId);
+    await app.events.post.view(postId)
     break;
   case "/post/create.html":
-    document.forms.createPost.addEventListener("submit", onCreatePost);
+    document.forms.createPost.addEventListener("submit", app.events.post.create);
     break;
   case "/post/update.html":
-    onUpdatePost();
+    app.events.post.update()
     break;
   case "/posts":
   case "/posts/":
