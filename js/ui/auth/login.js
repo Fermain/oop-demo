@@ -8,6 +8,7 @@ export async function onLogin(event) {
 
   try {
     await api.auth.login(data)
+    window.location.href = "/"
   } catch (error) {
     alert(error);
   }
