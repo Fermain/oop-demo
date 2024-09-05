@@ -1,16 +1,4 @@
 export default class NoroffAPI {
-  static apiBase = "https://v2.api.noroff.dev"
-
-  static loginPath = `${NoroffAPI.apiBase}/auth/login`
-
-  static registerPath = `${NoroffAPI.apiBase}/auth/register`
-
-  static postPath = (name) => `${NoroffAPI.apiBase}/blog/posts/${name}`
-
-  get apiPostPath() {
-    return NoroffAPI.postPath(this.user.name)
-  }
-
   get user() {
     try {
       return JSON.parse(localStorage.user);
@@ -19,46 +7,14 @@ export default class NoroffAPI {
     }
   }
 
-  auth = {
-    /**
-     * Logs in the user.
-     * @param {Object} user - The login parameters.
-     * @param {string} user.email - The user's email.
-     * @param {string} user.password - The user's password.
-     * @returns {Promise<Object>} The logged-in user data.
-     */
-    login: async ({ email, password }) => {
-      const body = JSON.stringify({ email, password });
+  static base = "https://v2.api.noroff.dev"
 
-      const response = await fetch(NoroffAPI.loginPath, {
-        headers: NoroffAPI.util.setupHeaders(true),
-        method: "post",
-        body,
-      });
-
-      const { data } = await NoroffAPI.util.handleResponse(response)
-      const { accessToken: token, ...user } = data;
-      localStorage.token = token;
-      localStorage.user = JSON.stringify(user);
-      return user
-    },
-    register: async ({ name, email, password }) => {
-      const body = JSON.stringify({ name, email, password });
-
-      const response = await fetch(NoroffAPI.registerPath, {
-        headers: NoroffAPI.util.setupHeaders(true),
-        method: "post",
-        body,
-      });
-
-      const { data } = await NoroffAPI.util.handleResponse(response)
-      return data
-    },
-    logout: () => {
-      localStorage.removeItem("token")
-      localStorage.removeItem("user")
-      window.location.href = "/auth/login"
-    }
+  static paths = {
+    base: "https://v2.api.noroff.dev",
+    login: `${NoroffAPI.base}/auth/login`,
+    register: `${NoroffAPI.base}/auth/register`,
+    posts: (name) => `${NoroffAPI.base}/blog/posts/${name}`,
+    post: (name, id) => `${NoroffAPI.base}/blog/posts/${name}/${id}`
   }
 
   static util = {
@@ -95,23 +51,65 @@ export default class NoroffAPI {
     }
   }
 
+  auth = {
+    /**
+     * Logs in the user.
+     * @param {Object} user - The login parameters.
+     * @param {string} user.email - The user's email.
+     * @param {string} user.password - The user's password.
+     * @returns {Promise<Object>} The logged-in user data.
+     */
+    login: async ({ email, password }) => {
+      const body = JSON.stringify({ email, password });
+
+      const response = await fetch(NoroffAPI.paths.login, {
+        headers: NoroffAPI.util.setupHeaders(true),
+        method: "post",
+        body,
+      });
+
+      const { data } = await NoroffAPI.util.handleResponse(response)
+      const { accessToken: token, ...user } = data;
+      localStorage.token = token;
+      localStorage.user = JSON.stringify(user);
+      return user
+    },
+    register: async ({ name, email, password }) => {
+      const body = JSON.stringify({ name, email, password });
+
+      const response = await fetch(NoroffAPI.paths.register, {
+        headers: NoroffAPI.util.setupHeaders(true),
+        method: "post",
+        body,
+      });
+
+      const { data } = await NoroffAPI.util.handleResponse(response)
+      return data
+    },
+    logout: () => {
+      localStorage.removeItem("token")
+      localStorage.removeItem("user")
+      window.location.href = "/auth/login"
+    }
+  }
+
   post = {
     read: async (id) => {
-      const { data } = await NoroffAPI.util.handleRequest(`${this.apiPostPath}/${id}`)
+      const { data } = await NoroffAPI.util.handleRequest(NoroffAPI.paths.post(this.user.name, id))
       return data
     },
     update: async (id, { title, body, tags, media }) => {
-      const { data } = await NoroffAPI.util.handleRequest(`${this.apiPostPath}/${id}`, {
+      const { data } = await NoroffAPI.util.handleRequest(NoroffAPI.paths.post(this.user.name, id), {
         method: "put",
         body: JSON.stringify({ title, body, tags, media })
       })
       return data
     },
     delete: async (id) => {
-      await NoroffAPI.util.handleRequest(`${this.apiPostPath}/${id}`, "text")
+      await NoroffAPI.util.handleRequest(NoroffAPI.paths.post(this.user.name, id), "text")
     },
     create: async ({ title, body, tags, media }) => {
-      const { data } = await NoroffAPI.util.handleRequest(`${this.apiPostPath}`, {
+      const { data } = await NoroffAPI.util.handleRequest(NoroffAPI.paths.posts(this.user.name), {
         method: "post",
         body: JSON.stringify({ title, body, tags, media })
       })
@@ -121,7 +119,7 @@ export default class NoroffAPI {
 
   posts = {
     read: async (tag, limit = 12, page = 1) => {
-      const url = new URL(this.apiPostPath);
+      const url = new URL(NoroffAPI.paths.posts(this.user.name));
 
       if (tag) {
         url.searchParams.append("_tag", tag);
