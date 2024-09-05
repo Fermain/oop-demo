@@ -1,26 +1,22 @@
-import { currentUser } from "../utilities/currentUser.js"
-
 export default class NoroffAPI {
-  apiBase = ""
+  static apiBase = "https://v2.api.noroff.dev"
 
-  constructor(apiBase = "https://v2.api.noroff.dev") {
-    this.apiBase = apiBase
+  static loginPath = `${NoroffAPI.apiBase}/auth/login`
+
+  static registerPath = `${NoroffAPI.apiBase}/auth/register`
+
+  static postPath = (name) => `${NoroffAPI.apiBase}/blog/posts/${name}`
+
+  get apiPostPath() {
+    return NoroffAPI.postPath(this.user.name)
   }
 
   get user() {
-    return currentUser();
-  }
-
-  get apiLoginPath() {
-    return `${this.apiBase}/auth/login`
-  }
-
-  get apiRegisterPath() {
-    return `${this.apiBase}/auth/register`
-  }
-
-  get apiPostPath() {
-    return `${this.apiBase}/blog/posts/${this.user.name}`
+    try {
+      return JSON.parse(localStorage.user);
+    } catch {
+      return null;
+    }
   }
 
   auth = {
@@ -34,7 +30,7 @@ export default class NoroffAPI {
     login: async ({ email, password }) => {
       const body = JSON.stringify({ email, password });
 
-      const response = await fetch(this.apiLoginPath, {
+      const response = await fetch(NoroffAPI.loginPath, {
         headers: this.util.setupHeaders(true),
         method: "post",
         body,
@@ -49,7 +45,7 @@ export default class NoroffAPI {
     register: async ({ name, email, password }) => {
       const body = JSON.stringify({ name, email, password });
 
-      const response = await fetch(this.apiRegisterPath, {
+      const response = await fetch(NoroffAPI.registerPath, {
         headers: this.util.setupHeaders(true),
         method: "post",
         body,
