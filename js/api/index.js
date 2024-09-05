@@ -31,12 +31,12 @@ export default class NoroffAPI {
       const body = JSON.stringify({ email, password });
 
       const response = await fetch(NoroffAPI.loginPath, {
-        headers: this.util.setupHeaders(true),
+        headers: NoroffAPI.util.setupHeaders(true),
         method: "post",
         body,
       });
 
-      const { data } = await this.util.handleResponse(response)
+      const { data } = await NoroffAPI.util.handleResponse(response)
       const { accessToken: token, ...user } = data;
       localStorage.token = token;
       localStorage.user = JSON.stringify(user);
@@ -46,12 +46,12 @@ export default class NoroffAPI {
       const body = JSON.stringify({ name, email, password });
 
       const response = await fetch(NoroffAPI.registerPath, {
-        headers: this.util.setupHeaders(true),
+        headers: NoroffAPI.util.setupHeaders(true),
         method: "post",
         body,
       });
 
-      const { data } = await this.util.handleResponse(response)
+      const { data } = await NoroffAPI.util.handleResponse(response)
       return data
     },
     logout: () => {
@@ -61,7 +61,7 @@ export default class NoroffAPI {
     }
   }
 
-  util = {
+  static util = {
     setupHeaders: (body) => {
       const headers = new Headers()
 
@@ -84,45 +84,37 @@ export default class NoroffAPI {
 
         throw new Error(error)
       }
+    },
+    handleRequest: async (url, options = { body: null }, output = "json") => {
+      const response = await fetch(url, {
+        ...options,
+        headers: NoroffAPI.util.setupHeaders(options.body)
+      });
+
+      return NoroffAPI.util.handleResponse(response, output)
     }
   }
 
   post = {
     read: async (id) => {
-      const response = await fetch(`${this.apiPostPath}/${id}`, {
-        headers: this.util.setupHeaders(),
-      });
-
-      const { data } = await this.util.handleResponse(response)
+      const { data } = await NoroffAPI.util.handleRequest(`${this.apiPostPath}/${id}`)
       return data
     },
     update: async (id, { title, body, tags, media }) => {
-      const response = await fetch(`${this.apiPostPath}/${id}`, {
-        headers: this.util.setupHeaders(true),
+      const { data } = await NoroffAPI.util.handleRequest(`${this.apiPostPath}/${id}`, {
         method: "put",
-        body: JSON.stringify({ title, body, tags, media }),
-      });
-
-      const { data } = await this.util.handleResponse(response)
+        body: JSON.stringify({ title, body, tags, media })
+      })
       return data
     },
     delete: async (id) => {
-      const response = await fetch(`${this.apiPostPath}/${id}`, {
-        method: "delete",
-        headers: this.util.setupHeaders(),
-      });
-
-      const text = this.util.handleResponse(response, "text")
-      return text
+      await NoroffAPI.util.handleRequest(`${this.apiPostPath}/${id}`, "text")
     },
     create: async ({ title, body, tags, media }) => {
-      const response = await fetch(this.apiPostPath, {
-        headers: this.util.setupHeaders(true),
+      const { data } = await NoroffAPI.util.handleRequest(`${this.apiPostPath}`, {
         method: "post",
-        body: JSON.stringify({ title, body, tags, media }),
-      });
-
-      const { data } = await this.util.handleResponse(response)
+        body: JSON.stringify({ title, body, tags, media })
+      })
       return data
     }
   }
@@ -139,10 +131,10 @@ export default class NoroffAPI {
       url.searchParams.append("page", page);
 
       const response = await fetch(url, {
-        headers: this.util.setupHeaders(),
+        headers: NoroffAPI.util.setupHeaders(),
       });
 
-      const { data } = await this.util.handleResponse(response)
+      const { data } = await NoroffAPI.util.handleResponse(response)
       return data
     }
   }
