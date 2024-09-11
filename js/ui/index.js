@@ -37,7 +37,7 @@ export default class NoroffApp extends NoroffAPI {
       case "/posts":
       case "/posts/":
       case "/posts/index.html":
-        await this.views.posts()
+        await this.views.posts(params)
         break;
       default:
       // 404 not found
@@ -102,8 +102,8 @@ export default class NoroffApp extends NoroffAPI {
     postCreate: async () => {
       document.forms.createPost.addEventListener("submit", this.events.post.create)
     },
-    posts: async () => {
-      const posts = await this.posts.read();
+    posts: async (params) => {
+      const posts = await this.posts.read(params.tag, params.limit, params.page);
       const ul = document.querySelector("ul");
 
       const listItems = posts.map(post => {
